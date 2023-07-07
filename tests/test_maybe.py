@@ -65,3 +65,6 @@ def test_partial_bind() -> None:
     
     assert just_multiplied_by_three._value == just_val._value * 3
     assert nothing_multiplied_by_three._value is None
+    
+def test_bind_tuple_through() -> None:
+    pass
