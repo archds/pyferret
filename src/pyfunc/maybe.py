@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Callable, TypeAlias, TypeVar
 
-import abstract
-import result
+from pyfunc import abstract, result
 
 T = TypeVar("T")
 S = TypeVar("S")

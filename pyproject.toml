@@ -31,7 +31,7 @@ addopts = [
   "--tb=short",
 ]
 pythonpath = [
-  "src/pyfunc",
+  "src",
 ]
 testpaths = [
   "tests",
