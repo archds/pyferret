@@ -3,9 +3,11 @@ from __future__ import annotations
 from typing import Any, Callable, TypeAlias, TypeVar
 
 import abstract
+import maybe
 
 T = TypeVar("T")
 S = TypeVar("S")
+U = TypeVar("U")
 E = TypeVar("E")
 
 
@@ -130,6 +132,20 @@ class Ok(abstract.Monad[T]):
         else:
             return self
 
+    def bind_maybe(
+        self: Ok[maybe.Maybe[S]], func: Callable[[S], Result[U, E]]
+    ) -> Result[maybe.Maybe[U], E]:
+        if isinstance(self._value, maybe.Just):
+            result = func(self._value._value)
+
+            if isinstance(result, Ok):
+                return Ok(maybe.Just(result._value))
+            else:
+                return result
+
+        else:
+            return Ok(maybe.Nothing())
+
     @property
     def is_err(self):
         return False
@@ -141,6 +157,11 @@ class Ok(abstract.Monad[T]):
 
 class Err(abstract.Monad[T]):
     def bind(self, func: Callable[[Any], Result[S, E]]) -> Err[T]:
+        raise NotImplementedError
+
+    def bind_maybe(
+        self, func: Callable[[S], Result[U, E]]
+    ) -> Result[maybe.Maybe[U], E]:
         raise NotImplementedError
 
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, Callable, TypeAlias, TypeVar
 
 import abstract
-from result import Ok, Result
+import result
 
 T = TypeVar("T")
 S = TypeVar("S")
@@ -137,14 +137,14 @@ class Just(abstract.Monad[T]):
             return Nothing()
 
     def bind_result(
-        self: Just[Result[U, E]], func: Callable[[U], Result[S, E]]
-    ) -> Just[Result[S, E]]:
-        result = self._value
+        self, func: Callable[[T], result.Result[S, E]]
+    ) -> result.Result[Maybe[S], E]:
+        res = func(self._value)
 
-        if isinstance(result, Ok):
-            return Just(func(result._value))
+        if isinstance(res, result.Ok):
+            return result.Ok(Just(res._value))
         else:
-            return Just(result)
+            return res
 
     @property
     def is_some(self) -> bool:
@@ -236,11 +236,10 @@ class Nothing(abstract.Monad[None]):
         """
         return self
 
-    def bind_result(self, func: Callable[[U], Result[S, E]]) -> Nothing:
-        """
-        If `Nothing` returns `Nothing`
-        """
-        return self
+    def bind_result(
+        self, func: Callable[[T], result.Result[S, E]]
+    ) -> result.Result[Maybe[S], E]:
+        return result.Ok(self)
 
     @property
     def is_some(self) -> bool:
