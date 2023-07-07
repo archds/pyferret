@@ -16,7 +16,7 @@ def test_nothing_init() -> None:
     assert not item.is_some
 
 
-def test_maybe_fmap() -> None:
+def test_fmap() -> None:
     def multiply_by_two(x: int) -> int:
         return x * 2
 
@@ -30,7 +30,7 @@ def test_maybe_fmap() -> None:
     assert nothing_result._value is None
 
 
-def test_maybe_bind() -> None:
+def test_bind() -> None:
     def multiply_by_two(x: int) -> Maybe[int]:
         return Just(x * 2)
 
@@ -50,3 +50,18 @@ def test_maybe_bind() -> None:
     assert just_on_nothing._value is None
     assert nothing_multiplied_by_two._value is None
     assert nothing_on_nothing._value is None
+
+
+def test_partial_bind() -> None:
+    def multiply(x: int, y: int) -> Maybe[int]:
+        return Just(x * y)
+    
+    just_val = Just(1)
+    nothing_val = Nothing()
+    
+    just_multiplied_by_three = just_val.bind_partial(multiply, 3)
+    nothing_multiplied_by_three = nothing_val.bind_partial(multiply, 3)
+    
+    
+    assert just_multiplied_by_three._value == just_val._value * 3
+    assert nothing_multiplied_by_three._value is None

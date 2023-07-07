@@ -12,3 +12,4 @@ build/
 venv/
 /.tox/
 .pytest_cache
+experiment.py

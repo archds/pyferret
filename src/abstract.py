@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Callable, Generic, TypeVar
+from typing import Any, Callable, Generic, TypeVar
 
 T = TypeVar("T")
 S = TypeVar("S")
@@ -19,6 +19,19 @@ class Functor(Context[T]):
     def fmap(self, func: Callable[[T], S]) -> Functor[S]:
         raise NotImplementedError
 
+    @abstractmethod
+    def fmap_partial(
+        self,
+        func: Callable[[T, Any], S],
+        *args,
+        **kwargs,
+    ) -> Functor[S]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def fmap_tuple(self, func: Callable[[Any], S], take: int) -> Functor[S]:
+        raise NotImplementedError
+
 
 class Applicative(Functor[T]):
     @abstractmethod
@@ -33,4 +46,17 @@ class Applicative(Functor[T]):
 class Monad(Applicative[T]):
     @abstractmethod
     def bind(self, func: Callable[[T], Monad[S]]) -> Monad[S]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def bind_partial(
+        self,
+        func: Callable[[T, Any], Monad[S]],
+        *args,
+        **kwargs,
+    ) -> Monad[S]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def bind_tuple(self, func: Callable[[Any], Monad[S]], take: int) -> Monad[S]:
         raise NotImplementedError
