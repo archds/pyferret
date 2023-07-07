@@ -3,27 +3,29 @@ from __future__ import annotations
 from typing import Any, Callable, TypeAlias, TypeVar
 
 import abstract
+from result import Ok, Result
 
 T = TypeVar("T")
 S = TypeVar("S")
-TU = TypeVar("TU", bound=tuple)
+U = TypeVar("U")
+E = TypeVar("E")
 
 
 class Just(abstract.Monad[T]):
-    def fmap(self, func: Callable[[T], S]) -> Maybe[S]:
+    def fmap(self, func: Callable[[T], S]) -> Just[S]:
         """
         If `Just[T]` - applies `(T -> S)` to `T` and returns `Just[S]`
         """
         return Just(func(self._value))
 
-    def fmap_through(self, func: Callable[[T], Any]) -> Maybe[T]:
+    def fmap_through(self, func: Callable[[T], Any]) -> Just[T]:
         """
         If `Just[T]` - applies `(T -> Any)` to `T` and returns `Just[T]`
         """
         _ = func(self._value)
         return self
 
-    def fmap_partial(self, func: Callable[[T, Any], S], *args, **kwargs) -> Maybe[S]:
+    def fmap_partial(self, func: Callable[[T, Any], S], *args, **kwargs) -> Just[S]:
         """
         If `Just[T]` - applies `partial((T -> S), *args, **kwargs)` to `T` and returns
         `Just[S]`
@@ -32,7 +34,7 @@ class Just(abstract.Monad[T]):
 
     def fmap_partial_through(
         self, func: Callable[[T, Any], Any], *args, **kwargs
-    ) -> Maybe[T]:
+    ) -> Just[T]:
         """
         If `Just[T]` - applies `partial((T -> Any), *args, **kwargs)` to `T` and returns
         `Just[T]`
@@ -41,7 +43,7 @@ class Just(abstract.Monad[T]):
 
         return self
 
-    def fmap_tuple(self, func: Callable[[T], S], take: int) -> Maybe[S]:
+    def fmap_tuple(self, func: Callable[[T], S], take: int) -> Just[S]:
         """
         If `Just[tuple]` - applies `(T -> S)` to `tuple[take]`, and returns `Just[S]`
         """
@@ -49,7 +51,7 @@ class Just(abstract.Monad[T]):
 
         return Just(func(self._value[take]))
 
-    def fmap_tuple_through(self, func: Callable[[T], Any], take: int) -> Maybe[T]:
+    def fmap_tuple_through(self, func: Callable[[T], Any], take: int) -> Just[T]:
         """
         If `Just[tuple]` - applies `(T -> S)` to `tuple[take]`, and returns
         `Just[tuple]`
@@ -134,6 +136,16 @@ class Just(abstract.Monad[T]):
         else:
             return Nothing()
 
+    def bind_result(
+        self: Just[Result[U, E]], func: Callable[[U], Result[S, E]]
+    ) -> Just[Result[S, E]]:
+        result = self._value
+
+        if isinstance(result, Ok):
+            return Just(func(result._value))
+        else:
+            return Just(result)
+
     @property
     def is_some(self) -> bool:
         return True
@@ -142,29 +154,29 @@ class Just(abstract.Monad[T]):
         return f"Just {self._value}"
 
 
-class Nothing(abstract.Monad[T]):
+class Nothing(abstract.Monad[None]):
     def __init__(self) -> None:
         self._value = None
 
-    def fmap(self, func: Callable[[T], S]) -> Maybe[S]:
+    def fmap(self, func: Callable[[T], S]) -> Nothing:
         """
         If `Nothing` returns `Nothing`
         """
         return self
 
-    def fmap_partial(self, func: Callable[[T, Any], S], *args, **kwargs) -> Maybe[S]:
+    def fmap_partial(self, func: Callable[[T, Any], S], *args, **kwargs) -> Nothing:
         """
         If `Nothing` returns `Nothing`
         """
         return self
 
-    def fmap_tuple(self, func: Callable[[TU], S], take: int) -> Maybe[S]:
+    def fmap_tuple(self, func: Callable[[Any], S], take: int) -> Nothing:
         """
         If `Nothing` returns `Nothing`
         """
         return self
 
-    def fmap_through(self, func: Callable[[T], Any]) -> Maybe[T]:
+    def fmap_through(self, func: Callable[[T], Any]) -> Nothing:
         """
         If `Nothing` returns `Nothing`
         """
@@ -172,19 +184,19 @@ class Nothing(abstract.Monad[T]):
 
     def fmap_partial_through(
         self, func: Callable[[T, Any], Any], *args, **kwargs
-    ) -> Maybe[T]:
+    ) -> Nothing:
         """
         If `Nothing` returns `Nothing`
         """
         return self
 
-    def fmap_tuple_through(self, func: Callable[[T], Any], take: int) -> Maybe[T]:
+    def fmap_tuple_through(self, func: Callable[[T], Any], take: int) -> Nothing:
         """
         If `Nothing` returns `Nothing`
         """
         return self
 
-    def bind(self, func: Callable[[T], Maybe[S]]) -> Maybe[S]:
+    def bind(self, func: Callable[[T], Maybe[S]]) -> Nothing:
         """
         If `Nothing` returns `Nothing`
         """
@@ -192,19 +204,19 @@ class Nothing(abstract.Monad[T]):
 
     def bind_partial(
         self, func: Callable[[T, Any], Maybe[S]], *args, **kwargs
-    ) -> Maybe[S]:
+    ) -> Nothing:
         """
         If `Nothing` returns `Nothing`
         """
         return self
 
-    def bind_tuple(self, func: Callable[[TU], Maybe[S]], take: int) -> Maybe[S]:
+    def bind_tuple(self, func: Callable[[Any], Maybe[S]], take: int) -> Nothing:
         """
         If `Nothing` returns `Nothing`
         """
         return self
 
-    def bind_through(self, func: Callable[[T], Maybe[Any]]) -> Maybe[T]:
+    def bind_through(self, func: Callable[[T], Maybe[Any]]) -> Nothing:
         """
         If `Nothing` returns `Nothing`
         """
@@ -212,15 +224,19 @@ class Nothing(abstract.Monad[T]):
 
     def bind_partial_through(
         self, func: Callable[[T, Any], Maybe[Any]], *args, **kwargs
-    ) -> Maybe[T]:
+    ) -> Nothing:
         """
         If `Nothing` returns `Nothing`
         """
         return self
 
-    def bind_tuple_through(
-        self, func: Callable[[T], Maybe[Any]], take: int
-    ) -> Maybe[T]:
+    def bind_tuple_through(self, func: Callable[[T], Maybe[Any]], take: int) -> Nothing:
+        """
+        If `Nothing` returns `Nothing`
+        """
+        return self
+
+    def bind_result(self, func: Callable[[U], Result[S, E]]) -> Nothing:
         """
         If `Nothing` returns `Nothing`
         """
