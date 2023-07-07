@@ -1,0 +1,16 @@
+{
+    "tasks": [
+        {
+            "label": "dev-format",
+            "type": "shell",
+            "command": "poetry run isort -q .;poetry run autoflake -ri --remove-all-unused-imports .;poetry run black -q . .;",
+            "options": {
+                "cwd": "${workspaceFolder}/src"
+            },
+            "presentation": {
+                "reveal": "silent",
+                "clear": true
+            }
+        }
+    ]
+}
