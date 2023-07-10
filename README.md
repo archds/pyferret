@@ -164,3 +164,5 @@ We defined that Maybe is a monad, then it have `fmap`, `bind` and other helpful 
 - [ ] `Maybe` test coverage
 - [ ] `Result` test coverage
 - [ ] `abstract` test coverage
+- [ ] `pypi` publish and versioning
+- [ ] GitGub Actions
