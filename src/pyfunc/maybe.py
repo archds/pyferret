@@ -4,7 +4,7 @@ from typing import Any, Callable, TypeAlias, TypeVar
 
 from pyfunc import abstract, result
 
-T = TypeVar("T")
+T = TypeVar("T", covariant=True)
 S = TypeVar("S")
 U = TypeVar("U")
 E = TypeVar("E")
@@ -39,25 +39,6 @@ class Just(abstract.Monad[T]):
         `Just[T]`
         """
         _ = func(self._value, *args, **kwargs)
-
-        return self
-
-    def fmap_tuple(self, func: Callable[[T], S], take: int) -> Just[S]:
-        """
-        If `Just[tuple]` - applies `(T -> S)` to `tuple[take]`, and returns `Just[S]`
-        """
-        assert isinstance(self._value, tuple)
-
-        return Just(func(self._value[take]))
-
-    def fmap_tuple_through(self, func: Callable[[T], Any], take: int) -> Just[T]:
-        """
-        If `Just[tuple]` - applies `(T -> S)` to `tuple[take]`, and returns
-        `Just[tuple]`
-        """
-        assert isinstance(self._value, tuple)
-
-        _ = func(self._value[take])
 
         return self
 
@@ -110,34 +91,12 @@ class Just(abstract.Monad[T]):
         else:
             return Nothing()
 
-    def bind_tuple(self, func: Callable[[Any], Maybe[S]], take: int) -> Maybe[S]:
-        """
-        If `Just[tuple]` - applies `(Any -> Maybe[S])` to `tuple[take]`, and returns
-        `Maybe[S]`
-        """
-        assert isinstance(self._value, tuple)
-
-        return func(self._value[take])
-
-    def bind_tuple_through(
-        self, func: Callable[[Any], Maybe[Any]], take: int
-    ) -> Maybe[T]:
-        """
-        If `Just[tuple]` - applies `(Any -> Maybe[Any])` to `tuple[take]`, and returns
-        `Maybe[T]`
-        """
-        assert isinstance(self._value, tuple)
-
-        result = func(self._value[take])
-
-        if result.is_some:
-            return self
-        else:
-            return Nothing()
-
     def bind_result(
         self, func: Callable[[T], result.Result[S, E]]
     ) -> result.Result[Maybe[S], E]:
+        """
+        If `Just[T]` - apply (T -> Result[S, E]) and return Result[Maybe[S], E]
+        """
         res = func(self._value)
 
         if isinstance(res, result.Ok):
@@ -147,6 +106,9 @@ class Just(abstract.Monad[T]):
 
     @property
     def is_some(self) -> bool:
+        """
+        Return `True` in case of Just
+        """
         return True
 
     def __repr__(self) -> str:
@@ -209,12 +171,6 @@ class Nothing(abstract.Monad[None]):
         """
         return self
 
-    def bind_tuple(self, func: Callable[[Any], Maybe[S]], take: int) -> Nothing:
-        """
-        If `Nothing` returns `Nothing`
-        """
-        return self
-
     def bind_through(self, func: Callable[[T], Maybe[Any]]) -> Nothing:
         """
         If `Nothing` returns `Nothing`
@@ -229,19 +185,19 @@ class Nothing(abstract.Monad[None]):
         """
         return self
 
-    def bind_tuple_through(self, func: Callable[[T], Maybe[Any]], take: int) -> Nothing:
-        """
-        If `Nothing` returns `Nothing`
-        """
-        return self
-
     def bind_result(
         self, func: Callable[[T], result.Result[S, E]]
     ) -> result.Result[Maybe[S], E]:
+        """
+        If `Nothing` returns `Nothing`
+        """
         return result.Ok(self)
 
     @property
     def is_some(self) -> bool:
+        """
+        Return `False` in case of Just
+        """
         return False
 
     def __repr__(self) -> str:

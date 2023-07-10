@@ -1,5 +1,5 @@
 from pyfunc.maybe import Just, Maybe, Nothing
-from pyfunc.result import Ok, Result
+from pyfunc.result import Ok, Result, Err
 
 
 def test_just_init() -> None:

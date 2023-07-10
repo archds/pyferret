@@ -4,10 +4,10 @@ from typing import Any, Callable, TypeAlias, TypeVar
 
 from pyfunc import abstract, maybe
 
-T = TypeVar("T")
+T = TypeVar("T", covariant=True)
+E = TypeVar("E", covariant=True)
 S = TypeVar("S")
 U = TypeVar("U")
-E = TypeVar("E")
 
 
 class Ok(abstract.Monad[T]):
@@ -17,21 +17,11 @@ class Ok(abstract.Monad[T]):
         """
         return Ok(func(self._value))
 
-    def fmap_partial(
-        self, func: Callable[[T, Any], S], *args, **kwargs
-    ) -> Result[S, E]:
+    def fmap_partial(self, func: Callable[[T, Any], S], *args, **kwargs) -> Ok[S]:
         """
         If `Ok[T]` - applies `partial((T -> S), *args, **kwargs)` and returns `Ok[S]`
         """
         return Ok(func(self._value, *args, **kwargs))
-
-    def fmap_tuple(self, func: Callable[[Any], S], take: int) -> Ok[S]:
-        """
-        If `Ok[T]` - applies `partial((T -> S), *args, **kwargs)` and returns `Ok[S]`
-        """
-        assert isinstance(self._value, tuple)
-
-        return Ok(func(self._value[take]))
 
     def fmap_through(self, func: Callable[[T], Result[Any, E]]) -> Ok[T]:
         """
@@ -52,19 +42,6 @@ class Ok(abstract.Monad[T]):
 
         return self
 
-    def fmap_tuple_through(
-        self, func: Callable[[Any], Result[Any, E]], take: int
-    ) -> Ok[T]:
-        """
-        If `Ok[tuple]` - applies `(T -> S)` to `tuple[take]`, and returns
-        `Ok[tuple]`
-        """
-        assert isinstance(self._value, tuple)
-
-        _ = func(self._value[take])
-
-        return self
-
     def bind(self, func: Callable[[T], Result[S, E]]) -> Result[S, E]:
         """
         If `Ok[T]` - applying `(T -> Result[S, E])`, and returns `Result[S, E]`
@@ -79,17 +56,6 @@ class Ok(abstract.Monad[T]):
         returns `Result[S, E]`
         """
         return func(self._value, *args, **kwargs)
-
-    def bind_tuple(
-        self, func: Callable[[Any], Result[S, E]], take: int
-    ) -> Result[S, E]:
-        """
-        If `Ok[tuple]` - applies `(Any -> Maybe[S])` to `tuple[take]`, and returns
-        `Result[S, E]`
-        """
-        assert isinstance(self._value, tuple)
-
-        return func(self._value[take])
 
     def bind_through(self, func: Callable[[T], Result[S, E]]) -> Result[T, E]:
         """
@@ -119,21 +85,14 @@ class Ok(abstract.Monad[T]):
         else:
             return self
 
-    def bind_tuple_through(
-        self, func: Callable[[Any], Result[S, E]], take: int
-    ) -> Result[T, E]:
-        assert isinstance(self._value, tuple)
-
-        result = func(self._value[take])
-
-        if isinstance(result, Err):
-            return result
-        else:
-            return self
-
     def bind_maybe(
         self: Ok[maybe.Maybe[S]], func: Callable[[S], Result[U, E]]
     ) -> Result[maybe.Maybe[U], E]:
+        """
+        If `Ok[Maybe[S]]` - apply `(S -> Result[U, E])` and:
+            - return `Ok[Maybe[U]]` if func result `Ok[U]`
+            - return `Err[E]` if func result `Err[E]`
+        """
         if isinstance(self._value, maybe.Just):
             result = func(self._value._value)
 
@@ -147,21 +106,93 @@ class Ok(abstract.Monad[T]):
 
     @property
     def is_err(self):
+        """
+        If `Ok` return `False`
+        """
         return False
 
     @property
     def is_ok(self):
+        """
+        If `Ok` return `True`
+        """
         return True
 
 
-class Err(abstract.Monad[T]):
-    def bind(self, func: Callable[[Any], Result[S, E]]) -> Err[T]:
-        raise NotImplementedError
+class Err(abstract.Monad[E]):
+    def fmap(self, func: Callable[[T], S]) -> Err[E]:
+        """
+        If `Err[E]` returns `Err[E]`
+        """
+        return self
 
-    def bind_maybe(
-        self, func: Callable[[S], Result[U, E]]
-    ) -> Result[maybe.Maybe[U], E]:
-        raise NotImplementedError
+    def fmap_partial(self, func: Callable[[T, Any], S], *args, **kwargs) -> Err[E]:
+        """
+        If `Err[E]` returns `Err[E]`
+        """
+        return self
+
+    def fmap_through(self, func: Callable[[T], Result[Any, S]]) -> Err[E]:
+        """
+        If `Err[E]` returns `Err[E]`
+        """
+        return self
+
+    def fmap_partial_through(
+        self, func: Callable[[T, Any], Result[Any, S]], *args, **kwargs
+    ) -> Err[E]:
+        """
+        If `Err[E]` returns `Err[E]`
+        """
+        return self
+
+    def bind(self, func: Callable[[T], Result[S, U]]) -> Err[E]:
+        """
+        If `Err[E]` returns `Err[E]`
+        """
+        return self
+
+    def bind_partial(
+        self, func: Callable[[T, Any], Result[S, U]], *args, **kwargs
+    ) -> Err[E]:
+        """
+        If `Err[E]` returns `Err[E]`
+        """
+        return self
+
+    def bind_through(self, func: Callable[[T], Result[S, U]]) -> Err[E]:
+        """
+        If `Err[E]` returns `Err[E]`
+        """
+        return self
+
+    def bind_partial_through(
+        self, func: Callable[[T, Any], Result[S, U]], *args, **kwargs
+    ) -> Err[E]:
+        """
+        If `Err[E]` returns `Err[E]`
+        """
+        return self
+
+    def bind_maybe(self, func: Callable[[T], Result[S, U]]) -> Err[E]:
+        """
+        If `Err[E]` returns `Err[E]`
+        """
+        return self
+
+    @property
+    def is_err(self):
+        """
+        If `Err` return `True`
+        """
+        return True
+
+    @property
+    def is_ok(self):
+        """
+        If `Err` return `False`
+        """
+        return False
 
 
 Result: TypeAlias = Ok[T] | Err[E]

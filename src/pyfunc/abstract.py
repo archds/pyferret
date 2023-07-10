@@ -3,8 +3,8 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import Callable, Generic, TypeVar
 
-T = TypeVar("T")
-S = TypeVar("S")
+T = TypeVar("T", covariant=True)
+S = TypeVar("S", covariant=True)
 
 
 class Context(Generic[T]):
