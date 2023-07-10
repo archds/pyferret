@@ -37,3 +37,33 @@ pythonpath = [
 testpaths = [
   "tests",
 ]
+
+[tool.ruff]
+select = [
+  "E",
+  "F",
+  "T20",
+  "W",
+  "N",
+  "YTT",
+  "DJ",
+  "ISC",
+  "ICN",
+  "RSE",
+  "PTH",
+  "C4",
+  "ISC",
+  "ICN",
+  "PIE",
+  "SIM",
+  "TCH",
+  "TD",
+  "FIX",
+  "PD",
+  "PLE",
+  "UP",
+]
+
+ignore = [
+  "UP035",
+]

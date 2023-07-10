@@ -41,7 +41,7 @@ def test_fmap_through(mocker: MockerFixture) -> None:
 
     just_result = just_val.fmap_through(foo)
     nothing_result = nothing_val.fmap_through(foo)
-    
+
     foo.assert_called_once_with(just_val._value)
 
     assert just_result._value == 1
@@ -50,16 +50,16 @@ def test_fmap_through(mocker: MockerFixture) -> None:
 
 def test_fmap_partial(mocker: MockerFixture) -> None:
     foo = mocker.MagicMock(return_value=30)
-    
+
     just_val = Just(1)
     nothing_val = Nothing()
-    
+
     args = (1,2,3)
     kwargs = {"a": 1, "b": 2, "c": 3}
 
     just_result = just_val.fmap_partial(foo, *args, **kwargs)
     nothing_result = nothing_val.fmap_partial(foo, *args, **kwargs)
-    
+
     foo.assert_called_once_with(just_val._value, *args, **kwargs)
 
     assert just_result._value == foo.return_value
@@ -109,68 +109,68 @@ def test_bind_partial() -> None:
 
 def test_bind_partial_through(mocker: MockerFixture) -> None:
     foo = mocker.MagicMock(return_value=Just(30))
-    
+
     just_val = Just(1)
     nothing_val = Nothing()
-    
+
     args = (1,2,3)
     kwargs = {"a": 1, "b": 2, "c": 3}
 
     just_result = just_val.fmap_partial(foo, *args, **kwargs)
     nothing_result = nothing_val.fmap_partial(foo, *args, **kwargs)
-    
+
     foo.assert_called_once_with(just_val._value, *args, **kwargs)
 
     assert just_result._value == foo.return_value
     assert nothing_result._value is None
-    
+
 def test_bind_result() -> None:
     def return_ok(x: int) -> Result[int, str]:
         return Ok(x * 2)
-    
+
     def return_err(x: int) -> Result[int, str]:
         return Err("Error")
-    
+
     just_val = Just(1)
     nothing_val = Nothing()
-    
+
     just_on_ok = just_val.bind_result(return_ok)
     just_on_err = just_val.bind_result(return_err)
-    
+
     nothing_on_ok = nothing_val.bind_result(return_ok)
     nothing_on_err = nothing_val.bind_result(return_err)
-    
+
     assert isinstance(just_on_ok._value, Just)
     assert isinstance(just_on_err._value, str)
-    
+
     assert just_on_ok._value._value == just_val._value * 2
     assert just_on_err._value == "Error"
-    
+
     assert nothing_on_ok._value._value is None
     assert nothing_on_err._value._value is None
-    
+
 def test_is_some() -> None:
     just_val = Just(1)
     nothing_val = Nothing()
-    
+
     assert just_val.is_some
     assert not nothing_val.is_some
-    
+
 def test_value_getter() -> None:
     just_val = Just(1)
     nothing_val = Nothing()
-    
+
     assert just_val.value == 1
-    
+
     with pytest.raises(expected_exception=ValueError):
         nothing_val.value
-        
+
 def test_value_or_default() -> None:
     default = 100
-    
+
     just_val = Just(1)
     nothing_val = Nothing()
-    
+
     assert just_val.get_value_or(default) == just_val._value
     assert nothing_val.get_value_or(default) == default
-    
+
