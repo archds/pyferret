@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Callable, TypeAlias, TypeVar
 
-from pyfunc import abstract, result
+from pyferret import abstract, result
 
 T = TypeVar("T", covariant=True)
 S = TypeVar("S")
