@@ -76,7 +76,7 @@ def test_bind() -> None:
     def cast_to_str(x: int) -> Maybe[str]:
         try:
             return Just(str(x))
-        except:
+        except Exception:
             return Nothing()
 
     just_val = Just(1)

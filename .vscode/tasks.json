@@ -1,7 +1,7 @@
 {
     "tasks": [
         {
-            "label": "dev-format",
+            "label": "format",
             "type": "shell",
             "command": "poetry run isort -q .;poetry run autoflake -ri --remove-all-unused-imports .;poetry run black -q . .;",
             "options": {
@@ -11,6 +11,16 @@
                 "reveal": "silent",
                 "clear": true
             }
+        },
+        {
+            "label": "ruff",
+            "type": "shell",
+            "command": "poetry run ruff .",
+        },
+        {
+            "label": "test",
+            "type": "shell",
+            "command": "poetry run pytest",
         }
     ]
 }
