@@ -1,12 +1,12 @@
 [tool.poetry]
 authors = ["archds <dsalekseev11@gmail.com>"]
 description = "Functional programming tools for Python"
-name = "pyfunc"
+name = "pyferret"
 readme = "README.md"
-version = "0.1.0"
+version = "0.2.0"
 
 packages = [
-  {include = "pyfunc", from = "src"},
+  {include = "pyferret", from = "src"},
 ]
 
 [tool.poetry.dependencies]
