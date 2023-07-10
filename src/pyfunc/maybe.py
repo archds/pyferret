@@ -131,12 +131,6 @@ class Nothing(abstract.Monad[None]):
         """
         return self
 
-    def fmap_tuple(self, func: Callable[[Any], S], take: int) -> Nothing:
-        """
-        If `Nothing` returns `Nothing`
-        """
-        return self
-
     def fmap_through(self, func: Callable[[T], Any]) -> Nothing:
         """
         If `Nothing` returns `Nothing`
@@ -146,12 +140,6 @@ class Nothing(abstract.Monad[None]):
     def fmap_partial_through(
         self, func: Callable[[T, Any], Any], *args, **kwargs
     ) -> Nothing:
-        """
-        If `Nothing` returns `Nothing`
-        """
-        return self
-
-    def fmap_tuple_through(self, func: Callable[[T], Any], take: int) -> Nothing:
         """
         If `Nothing` returns `Nothing`
         """
