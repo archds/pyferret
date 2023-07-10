@@ -26,5 +26,8 @@ jobs:
             - name: Lint with Ruff
               run: poetry run ruff .
 
+            - name: Typecheck with Pyright
+              run: poetry run pyright
+
             - name: Run tests
               run: poetry run pytest
