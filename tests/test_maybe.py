@@ -54,7 +54,7 @@ def test_fmap_partial(mocker: MockerFixture) -> None:
     just_val = Just(1)
     nothing_val = Nothing()
 
-    args = (1,2,3)
+    args = (1, 2, 3)
     kwargs = {"a": 1, "b": 2, "c": 3}
 
     just_result = just_val.fmap_partial(foo, *args, **kwargs)
@@ -107,13 +107,14 @@ def test_bind_partial() -> None:
     assert just_multiplied_by_three._value == just_val._value * 3
     assert nothing_multiplied_by_three._value is None
 
+
 def test_bind_partial_through(mocker: MockerFixture) -> None:
     foo = mocker.MagicMock(return_value=Just(30))
 
     just_val = Just(1)
     nothing_val = Nothing()
 
-    args = (1,2,3)
+    args = (1, 2, 3)
     kwargs = {"a": 1, "b": 2, "c": 3}
 
     just_result = just_val.fmap_partial(foo, *args, **kwargs)
@@ -123,6 +124,7 @@ def test_bind_partial_through(mocker: MockerFixture) -> None:
 
     assert just_result._value == foo.return_value
     assert nothing_result._value is None
+
 
 def test_bind_result() -> None:
     def return_ok(x: int) -> Result[int, str]:
@@ -149,12 +151,14 @@ def test_bind_result() -> None:
     assert nothing_on_ok._value._value is None
     assert nothing_on_err._value._value is None
 
+
 def test_is_some() -> None:
     just_val = Just(1)
     nothing_val = Nothing()
 
     assert just_val.is_some
     assert not nothing_val.is_some
+
 
 def test_value_getter() -> None:
     just_val = Just(1)
@@ -165,6 +169,7 @@ def test_value_getter() -> None:
     with pytest.raises(expected_exception=ValueError):
         nothing_val.value
 
+
 def test_value_or_default() -> None:
     default = 100
 
@@ -173,4 +178,3 @@ def test_value_or_default() -> None:
 
     assert just_val.get_value_or(default) == just_val._value
     assert nothing_val.get_value_or(default) == default
-
