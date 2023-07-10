@@ -11,6 +11,7 @@ In Python function composition may be quite nice and useful tool. Function compo
 To use a composition that corresponds this description in Python we need some helpful tools which this library provides.
 
 We have some calculating functions:
+
 ```python
 def compute_x() -> int | None: ...
 def compute_y() -> int | None: ...
@@ -56,7 +57,7 @@ def process_x() -> Maybe[str]:
 result = process_x().fmap(str.lower).fmap(str.split).fmap(len)
 ```
 
-### Meaning of Context
+## Meaning of Context
 
 In functional programming, a context refers to additional information or state associated with a computation or value.
 
@@ -78,9 +79,9 @@ result = compute_or_error_code()
 is_error = result == ERROR_CODE  # This may be not an error
 ```
 
-### Value of Functor
+## Value of Functor
 
-Functor defined here as Context which have `fmap` method. 
+Functor defined here as Context which have `fmap` method.
 
 Let's say we have a Functor named `A` with value `100` (we say that Functor is a Context, while Context is just a container for a value). Then `fmap` simply takes a function that can do operation on type of `A` and packs result of function to same Context.
 
@@ -88,7 +89,7 @@ Let's say we have a Functor named `A` with value `100` (we say that Functor is a
 result = SomeFunctor(100).fmap(str)  # SomeFunctor("100")
 ```
 
-### Importance of Monad
+## Importance of Monad
 
 Monad defined here as Functor which have `bind` method.
 
@@ -99,7 +100,7 @@ op = lambda x: SomeMonad("Yes!")
 result = SomeMonad(100).bind(op)  # SomeMonad("Yes!")
 ```
 
-### Maybe...
+## Maybe
 
 A "maybe" monad handles computations that may or may not produce a value. It represents uncertainty or potential failure. The value can be "Just x" or "Nothing". This allows for chaining computations and concise error handling.
 
@@ -147,13 +148,13 @@ result = side_effect()
 if result.is_some: ...
 ```
 
-#### How `Maybe` can help with function composition?
+### How `Maybe` can help with function composition?
 
 `Maybe` is can be treated as `Just[Any] | Nothing`, where `Just` and `Nothing` is a `Context` that stores a value, but `Nothing` not providing access to inner value because meaning of this word say that there's can't be a value.
 
 We defined that Maybe is a monad, then it have `fmap`, `bind` and other helpful methods.
 
-# Work in progress...
+## Work in progress
 
 ### TODO
 
