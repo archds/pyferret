@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable, TypeAlias, TypeVar
+from typing import Any, Callable, NoReturn, TypeAlias, TypeVar
 
 from pyferret import abstract, maybe
 
@@ -105,18 +105,32 @@ class Ok(abstract.Monad[T]):
             return Ok(maybe.Nothing())
 
     @property
-    def is_err(self):
+    def is_err(self) -> bool:
         """
         If `Ok` return `False`
         """
         return False
 
     @property
-    def is_ok(self):
+    def is_ok(self) -> bool:
         """
         If `Ok` return `True`
         """
         return True
+
+    @property
+    def ok_value(self) -> T:
+        """
+        Unsafe return ok inner value
+        """
+        return self._value
+
+    @property
+    def err_value(self) -> NoReturn:
+        """
+        Raises ValueError
+        """
+        raise ValueError("Attempt to get err value on Ok")
 
 
 class Err(abstract.Monad[E]):
@@ -193,6 +207,20 @@ class Err(abstract.Monad[E]):
         If `Err` return `False`
         """
         return False
+
+    @property
+    def ok_value(self) -> NoReturn:
+        """
+        raises ValueError
+        """
+        raise ValueError("Attempt to get ok value on Err")
+
+    @property
+    def err_value(self) -> E:
+        """
+        Unsafe return err inner value
+        """
+        return self._value
 
 
 Result: TypeAlias = Ok[T] | Err[E]

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable, TypeAlias, TypeVar
+from typing import Any, Callable, NoReturn, TypeAlias, TypeVar
 
 from pyferret import abstract, result
 
@@ -107,9 +107,22 @@ class Just(abstract.Monad[T]):
     @property
     def is_some(self) -> bool:
         """
-        Return `True` in case of Just
+        Return `True` in case of `Just`
         """
         return True
+
+    @property
+    def value(self) -> T:
+        """
+        Unsafe return inner value in case of `Just`
+        """
+        return self._value
+
+    def get_value_or(self, default: S) -> T:
+        """
+        If `Just` return inner value
+        """
+        return self._value
 
     def __repr__(self) -> str:
         return f"Just {self._value}"
@@ -184,9 +197,22 @@ class Nothing(abstract.Monad[None]):
     @property
     def is_some(self) -> bool:
         """
-        Return `False` in case of Just
+        Return `False` in case of `Nothing`
         """
         return False
+
+    @property
+    def value(self) -> NoReturn:
+        """
+        If `Nothing` raises an error
+        """
+        raise ValueError("Attempt to get value on Nothing")
+
+    def get_value_or(self, default: S) -> S:
+        """
+        If `Just` return inner value
+        """
+        return default
 
     def __repr__(self) -> str:
         return "Nothing"

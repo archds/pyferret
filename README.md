@@ -157,7 +157,8 @@ We defined that Maybe is a monad, then it have `fmap`, `bind` and other helpful 
 
 ### TODO
 
-- [ ] `Maybe` methods that returns value out of contexts
+- [x] `Maybe` methods that returns value out of contexts
+- [x] `Result` methods that returns value out of contexts
 - [ ] Complete docs
 - [ ] `Result` methods for working with exceptions and traceback
 - [ ] Helper functions
@@ -166,3 +167,5 @@ We defined that Maybe is a monad, then it have `fmap`, `bind` and other helpful 
 - [ ] `abstract` test coverage
 - [ ] `pypi` publish and versioning
 - [ ] GitGub Actions
+  - [ ] typecheck
+  - [ ] codestyle
