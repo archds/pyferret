@@ -188,9 +188,9 @@ class Nothing(abstract.Monad[None]):
 
     def bind_result(
         self, func: Callable[[T], result.Result[S, E]]
-    ) -> result.Result[Maybe[S], E]:
+    ) -> result.Ok[Nothing]:
         """
-        If `Nothing` returns `Nothing`
+        If `Nothing` returns `Ok[Nothing]`
         """
         return result.Ok(self)
 

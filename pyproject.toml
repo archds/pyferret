@@ -21,6 +21,7 @@ ruff = "^0.0.277"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.4.0"
+pytest-mock = "^3.11.1"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"

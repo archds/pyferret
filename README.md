@@ -163,7 +163,7 @@ We defined that Maybe is a monad, then it have `fmap`, `bind` and other helpful 
 - [ ] Complete docs
 - [ ] `Result` methods for working with exceptions and traceback
 - [ ] Helper functions
-- [ ] `Maybe` test coverage
+- [x] `Maybe` test coverage
 - [ ] `Result` test coverage
 - [ ] `abstract` test coverage
 - [ ] `pypi` publish and versioning
