@@ -1,6 +1,7 @@
 import pytest
+
+from pyferret import result
 from pyferret.maybe import Just, Maybe, Nothing
-from pyferret.result import Ok, Result, Err
 from pytest_mock import MockerFixture
 
 
@@ -66,6 +67,23 @@ def test_fmap_partial(mocker: MockerFixture) -> None:
     assert nothing_result._value is None
 
 
+def test_fmap_partial_through(mocker: MockerFixture) -> None:
+    foo = mocker.MagicMock(return_value=30)
+
+    just_val = Just(1)
+    nothing_val = Nothing()
+
+    args = (1, 2, 3)
+    kwargs = {"a": 1, "b": 2, "c": 3}
+
+    just_result = just_val.fmap_partial_through(foo, *args, **kwargs)
+    nothing_result = nothing_val.fmap_partial_through(foo, *args, **kwargs)
+
+    foo.assert_called_once_with(just_val._value, *args, **kwargs)
+
+    assert just_result._value == just_val._value
+    assert nothing_result._value is None
+
 def test_bind() -> None:
     def multiply_by_two(x: int) -> Maybe[int]:
         return Just(x * 2)
@@ -127,11 +145,11 @@ def test_bind_partial_through(mocker: MockerFixture) -> None:
 
 
 def test_bind_result() -> None:
-    def return_ok(x: int) -> Result[int, str]:
-        return Ok(x * 2)
+    def return_ok(x: int) -> result.Result[int, str]:
+        return result.Ok(x * 2)
 
-    def return_err(x: int) -> Result[int, str]:
-        return Err("Error")
+    def return_err(x: int) -> result.Result[int, str]:
+        return result.Err("Error")
 
     just_val = Just(1)
     nothing_val = Nothing()

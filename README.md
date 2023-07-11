@@ -327,3 +327,4 @@ _Work in progress..._
 - [x] GitGub Actions
   - [ ] typecheck
   - [x] codestyle
+- [ ] Hash and compare methods
