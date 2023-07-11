@@ -1,8 +1,8 @@
 import pytest
+from pytest_mock import MockerFixture
 
 from pyferret import result
 from pyferret.maybe import Just, Maybe, Nothing
-from pytest_mock import MockerFixture
 
 
 def test_just_init() -> None:
@@ -83,6 +83,7 @@ def test_fmap_partial_through(mocker: MockerFixture) -> None:
 
     assert just_result._value == just_val._value
     assert nothing_result._value is None
+
 
 def test_bind() -> None:
     def multiply_by_two(x: int) -> Maybe[int]:

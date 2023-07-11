@@ -1,7 +1,8 @@
 import pytest
 from pytest_mock import MockerFixture
-from pyferret.result import Result, Ok, Err
+
 from pyferret import maybe
+from pyferret.result import Err, Ok, Result
 
 
 def test_ok_init() -> None:
@@ -222,4 +223,3 @@ def test_value_getter() -> None:
     with pytest.raises(expected_exception=ValueError):
         err.ok_value
         ok.err_value
-
