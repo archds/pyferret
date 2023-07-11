@@ -4,6 +4,24 @@ This Python library provides functional programming tools like the "maybe" and "
 
 Not pretending on full correspondence with theoretical part of related instruments, because of not all of them can be implemented in Python context with comfortable usage. There may be implemented not all details that required by some abstractions in FP or provided some additional stuff for usability.
 
+- [pyferret](#pyferret)
+  - [Function composition](#function-composition)
+  - [Meaning of Context](#meaning-of-context)
+  - [Value of Functor](#value-of-functor)
+  - [Importance of Monad](#importance-of-monad)
+  - [Maybe](#maybe)
+    - [How `Maybe` can help with function composition?](#how-maybe-can-help-with-function-composition)
+    - [`Maybe` API](#maybe-api)
+      - [Initialize instance](#initialize-instance)
+      - [`isintance` checks](#isintance-checks)
+      - [Unsafe accessing the value](#unsafe-accessing-the-value)
+      - [Safe accessing the value](#safe-accessing-the-value)
+      - [Boolean checks](#boolean-checks)
+      - [Mapping functions](#mapping-functions)
+      - [Binding functions](#binding-functions)
+  - [Result](#result)
+  - [TODO](#todo)
+
 ## Function composition
 
 In Python function composition may be quite nice and useful tool. Function composition is a technique in functional programming where multiple functions are combined together to create a new function. The output of one function becomes the input of the next function, forming a chain of transformations. This allows for the creation of complex and reusable logic by breaking it down into smaller, composable parts.
@@ -154,9 +172,148 @@ if result.is_some: ...
 
 We defined that Maybe is a monad, then it have `fmap`, `bind` and other helpful methods.
 
-## Work in progress
+### `Maybe` API
 
-### TODO
+#### Initialize instance
+
+```python
+>>> some = Just(1)
+>>> nothing = Nothing()
+```
+
+#### `isintance` checks
+
+```python
+>>> isinstance(some, Just)
+True
+>>> isinstance(nothing, Nothing)
+True
+```
+
+#### Unsafe accessing the value
+
+```python
+>>> some.value
+1
+>>> nothing.value
+ValueError: Attempt to get value on Nothing
+```
+
+#### Safe accessing the value
+
+```python
+>>> some.get_value_or("default")
+1
+>>> nothing.get_value_or("default")
+'default'
+```
+
+#### Boolean checks
+
+```python
+>>> some.is_some
+True
+>>> nothing.is_some
+False
+```
+
+#### Mapping functions
+
+Basic `fmap`:
+
+```python
+>>> some.fmap(lambda x: x * 3 * 10)
+Just 30
+>>> nothing.fmap(lambda x: x * 3 * 10)
+Nothing
+```
+
+We may need make side effect with value inside `Just`, but preserve this value and ignore function return:
+
+```python
+>>> some.fmap_through(lambda x: print(x))
+1  # print(x)
+Just 1  # print returns `None`, but some.value is preserved in context
+>>> nothing.fmap_through(lambda x: print(x))
+Nothing
+```
+
+Partial application mapped function:
+
+```python
+>>> some.fmap_partial(lambda x, y: x * y, y=25)
+Just 25
+>>> nothing.fmap_partial(lambda x, y: x * y, y=25)
+Nothing
+```
+
+Partial application with preserving inner value, `fmap_through` and `fmap_partial` combined:
+
+```python
+>>> some.fmap_partial_through(lambda x, y: print(x + y), y=25)
+26  # print(x + y)
+Just 1
+>>> nothing.fmap_partial_through(lambda x, y: print(x + y), y=25)
+Nothing
+```
+
+#### Binding functions
+
+Basic `bind`:
+
+```python
+>>> some.bind(lambda x: Just(x + 10))
+Just 11
+>>> nothing.bind(lambda x: Just(x + 10))
+Nothing
+>>> some.bind(lambda x: Nothing())
+Nothing
+>>> nothing.bind(lambda x: Nothing())
+Nothing
+```
+
+Binding and preserving inner value:
+
+```python
+>>> def side_effect(x: int) -> Maybe[str]:
+...     print(x)
+...     return Just("Ok")
+... 
+>>> some.bind_through(side_effect)
+1
+Just 1
+>>> nothing.bind_through(side_effect)
+Nothing
+```
+
+Partial application binding function:
+
+```python
+>>> some.bind_partial(lambda x,y: Just(x + y), y=34)
+Just 35
+>>> nothing.bind_partial(lambda x,y: Just(x + y), y=34)
+Nothing
+```
+
+Partial application and preserving inner value:
+
+```python
+>>> def side_effect(x: int, y: int) -> Maybe[str]:
+...     print(x + y)
+...     return Just("Ok")
+... 
+>>> some.bind_partial_through(side_effect, y=42)
+43
+Just 1
+>>> nothing.bind_partial_through(side_effect, y=42)
+Nothing
+```
+
+## Result
+
+_Work in progress..._
+
+## TODO
 
 - [x] `Maybe` methods that returns value out of contexts
 - [x] `Result` methods that returns value out of contexts
@@ -166,7 +323,7 @@ We defined that Maybe is a monad, then it have `fmap`, `bind` and other helpful 
 - [x] `Maybe` test coverage
 - [ ] `Result` test coverage
 - [ ] `abstract` test coverage
-- [ ] `pypi` publish and versioning
-- [ ] GitGub Actions
+- [x] `pypi` publish and versioning
+- [x] GitGub Actions
   - [ ] typecheck
-  - [ ] codestyle
+  - [x] codestyle
