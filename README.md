@@ -20,7 +20,7 @@ Not pretending on full correspondence with theoretical part of related instrumen
       - [Mapping functions](#mapping-functions)
       - [Binding functions](#binding-functions)
   - [Result](#result)
-    - [TODO](#todo)
+  - [TODO](#todo)
 
 ## Function composition
 
@@ -313,7 +313,7 @@ Nothing
 
 _Work in progress..._
 
-### TODO
+## TODO
 
 - [x] `Maybe` methods that returns value out of contexts
 - [x] `Result` methods that returns value out of contexts
