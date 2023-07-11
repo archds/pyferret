@@ -1,10 +1,14 @@
 # pyferret
 
-This Python library provides functional programming tools like the "maybe" and "result" monads. These monads help handle optional values and error handling in a functional way. The "maybe" monad deals with null or undefined values, while the "result" monad manages computations that may fail and return an error. These tools promote clean, reliable, and concise code by promoting immutability, separation of concerns, and composability.
+![Python 3.11](https://img.shields.io/badge/python-3.11-3572a5.svg)
+[![PyPI version](https://badge.fury.io/py/pyferret.svg)](https://badge.fury.io/py/pyferret)
+
+This Python library provides functional programming tools like the "maybe" and "result" monads. These monads help handle optional values and error handling in a functional way. The "maybe" monad deals with null or undefined values, while the "result" monad manages computations that may fail and return an error. These tools promote clean, reliable, and concise code by promoting immutability, separation of concerns, and composability. **Not yet ready for production.**
 
 Not pretending on full correspondence with theoretical part of related instruments, because of not all of them can be implemented in Python context with comfortable usage. There may be implemented not all details that required by some abstractions in FP or provided some additional stuff for usability.
 
 - [pyferret](#pyferret)
+  - [Installation](#installation)
   - [Function composition](#function-composition)
   - [Meaning of Context](#meaning-of-context)
   - [Value of Functor](#value-of-functor)
@@ -21,6 +25,12 @@ Not pretending on full correspondence with theoretical part of related instrumen
       - [Binding functions](#binding-functions)
   - [Result](#result)
   - [TODO](#todo)
+
+## Installation
+
+```bash
+pip install pyferret
+```
 
 ## Function composition
 
@@ -320,8 +330,9 @@ _Work in progress..._
 - [ ] Complete docs
 - [ ] `Result` methods for working with exceptions and traceback
 - [ ] Helper functions
+  - [ ] From optional for `Maybe`
 - [x] `Maybe` test coverage
-- [ ] `Result` test coverage
+- [x] `Result` test coverage
 - [ ] `abstract` test coverage
 - [x] `pypi` publish and versioning
 - [x] GitGub Actions
