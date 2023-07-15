@@ -8,6 +8,8 @@ T = TypeVar("T", covariant=True)
 E = TypeVar("E", covariant=True)
 S = TypeVar("S")
 U = TypeVar("U")
+V = TypeVar("V", bound=object)
+K = TypeVar("K", bound=object)
 
 
 class Ok(abstract.Monad[T]):
@@ -134,61 +136,61 @@ class Ok(abstract.Monad[T]):
 
 
 class Err(abstract.Monad[E]):
-    def fmap(self, func: Callable[[T], S]) -> Err[E]:
+    def fmap(self, func: Callable[[V], K]) -> Err[E]:
         """
         If `Err[E]` returns `Err[E]`
         """
         return self
 
-    def fmap_partial(self, func: Callable[[T, Any], S], *args, **kwargs) -> Err[E]:
+    def fmap_partial(self, func: Callable[[V, Any], K], *args, **kwargs) -> Err[E]:
         """
         If `Err[E]` returns `Err[E]`
         """
         return self
 
-    def fmap_through(self, func: Callable[[T], Result[Any, S]]) -> Err[E]:
+    def fmap_through(self, func: Callable[[V], Result[Any, S]]) -> Err[E]:
         """
         If `Err[E]` returns `Err[E]`
         """
         return self
 
     def fmap_partial_through(
-        self, func: Callable[[T, Any], Result[Any, S]], *args, **kwargs
+        self, func: Callable[[V, Any], Result[Any, S]], *args, **kwargs
     ) -> Err[E]:
         """
         If `Err[E]` returns `Err[E]`
         """
         return self
 
-    def bind(self, func: Callable[[T], Result[S, U]]) -> Err[E]:
+    def bind(self, func: Callable[[V], Result[S, U]]) -> Err[E]:
         """
         If `Err[E]` returns `Err[E]`
         """
         return self
 
     def bind_partial(
-        self, func: Callable[[T, Any], Result[S, U]], *args, **kwargs
+        self, func: Callable[[V, Any], Result[S, U]], *args, **kwargs
     ) -> Err[E]:
         """
         If `Err[E]` returns `Err[E]`
         """
         return self
 
-    def bind_through(self, func: Callable[[T], Result[S, U]]) -> Err[E]:
+    def bind_through(self, func: Callable[[V], Result[S, U]]) -> Err[E]:
         """
         If `Err[E]` returns `Err[E]`
         """
         return self
 
     def bind_partial_through(
-        self, func: Callable[[T, Any], Result[S, U]], *args, **kwargs
+        self, func: Callable[[V, Any], Result[S, U]], *args, **kwargs
     ) -> Err[E]:
         """
         If `Err[E]` returns `Err[E]`
         """
         return self
 
-    def bind_maybe(self, func: Callable[[T], Result[S, U]]) -> Err[E]:
+    def bind_maybe(self, func: Callable[[V], Result[S, U]]) -> Err[E]:
         """
         If `Err[E]` returns `Err[E]`
         """

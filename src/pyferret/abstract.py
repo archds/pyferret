@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Callable, Generic, TypeVar
+from typing import Generic, TypeVar
 
 T = TypeVar("T", covariant=True)
 S = TypeVar("S", covariant=True)
@@ -20,7 +20,7 @@ class Context(Generic[T]):
 
 class Functor(Context[T]):
     @abstractmethod
-    def fmap(self, func: Callable[[T], S]) -> Functor[S]:
+    def fmap(self, func):
         """
         Applying `func` on inner value of context
         """
@@ -29,14 +29,12 @@ class Functor(Context[T]):
 
 
 class Applicative(Functor[T]):
-    @abstractmethod
-    def applicate(self, func: Applicative[Callable[[T], S]]) -> Applicative[S]:
-        raise NotImplementedError
+    pass
 
 
 class Monad(Applicative[T]):
     @abstractmethod
-    def bind(self, func: Callable[[T], Monad[S]]) -> Monad[S]:
+    def bind(self, func):
         """
         Applying `func` which returns a Monad on inner value of context and return its
         result
