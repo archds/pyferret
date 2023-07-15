@@ -29,5 +29,13 @@ jobs:
             - name: Typecheck with Pyright
               run: poetry run pyright
 
+            - name: Typecheck with Mypy
+              run: |
+                cd src/pyferret
+                poetry run mypy .
+
+            - name: Build package
+              run: poetry build
+
             - name: Run tests
               run: poetry run pytest
