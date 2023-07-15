@@ -19,10 +19,13 @@ isort = "^5.12.0"
 pyright = "^1.1.316"
 ruff = "^0.0.277"
 mypy = "^1.4.1"
+rich = "^13.4.2"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.4.0"
 pytest-mock = "^3.11.1"
+pytest-cov = "^4.1.0"
+coverage-badge = "^1.1.0"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
