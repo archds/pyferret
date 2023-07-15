@@ -15,6 +15,19 @@
             "command": "poetry run ruff .",
         },
         {
+            "label": "pyright",
+            "type": "shell",
+            "command": "poetry run pyright",
+        },
+        {
+            "label": "mypy",
+            "type": "shell",
+            "command": "poetry run mypy .",
+            "options": {
+                "cwd": "${workspaceFolder}/src/pyferret"
+            }
+        },
+        {
             "label": "test",
             "type": "shell",
             "command": "poetry run pytest",

@@ -331,11 +331,12 @@ _Work in progress..._
 - [ ] `Result` methods for working with exceptions and traceback
 - [ ] Helper functions
   - [ ] From optional for `Maybe`
+  - [ ] Concat list
 - [x] `Maybe` test coverage
 - [x] `Result` test coverage
 - [ ] `abstract` test coverage
 - [x] `pypi` publish and versioning
 - [x] GitGub Actions
-  - [ ] typecheck
+  - [x] typecheck
   - [x] codestyle
 - [ ] Hash and compare methods

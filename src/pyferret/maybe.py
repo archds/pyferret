@@ -8,6 +8,8 @@ T = TypeVar("T", covariant=True)
 S = TypeVar("S")
 U = TypeVar("U")
 E = TypeVar("E")
+V = TypeVar("V", bound=object)
+K = TypeVar("K", bound=object)
 
 
 class Just(abstract.Monad[T]):
@@ -118,7 +120,7 @@ class Just(abstract.Monad[T]):
         """
         return self._value
 
-    def get_value_or(self, default: S) -> T:
+    def get_value_or(self, default: object) -> T:
         """
         If `Just` return inner value
         """
@@ -132,54 +134,54 @@ class Nothing(abstract.Monad[None]):
     def __init__(self) -> None:
         self._value = None
 
-    def fmap(self, func: Callable[[T], S]) -> Nothing:
+    def fmap(self, func: Callable[[V], K]) -> Nothing:
         """
         If `Nothing` returns `Nothing`
         """
         return self
 
-    def fmap_partial(self, func: Callable[[T, Any], S], *args, **kwargs) -> Nothing:
+    def fmap_partial(self, func: Callable[[V, Any], K], *args, **kwargs) -> Nothing:
         """
         If `Nothing` returns `Nothing`
         """
         return self
 
-    def fmap_through(self, func: Callable[[T], Any]) -> Nothing:
+    def fmap_through(self, func: Callable[[V], Any]) -> Nothing:
         """
         If `Nothing` returns `Nothing`
         """
         return self
 
     def fmap_partial_through(
-        self, func: Callable[[T, Any], Any], *args, **kwargs
+        self, func: Callable[[V, Any], Any], *args, **kwargs
     ) -> Nothing:
         """
         If `Nothing` returns `Nothing`
         """
         return self
 
-    def bind(self, func: Callable[[T], Maybe[S]]) -> Nothing:
+    def bind(self, func: Callable[[V], Maybe[S]]) -> Nothing:
         """
         If `Nothing` returns `Nothing`
         """
         return self
 
     def bind_partial(
-        self, func: Callable[[T, Any], Maybe[S]], *args, **kwargs
+        self, func: Callable[[V, Any], Maybe[S]], *args, **kwargs
     ) -> Nothing:
         """
         If `Nothing` returns `Nothing`
         """
         return self
 
-    def bind_through(self, func: Callable[[T], Maybe[Any]]) -> Nothing:
+    def bind_through(self, func: Callable[[V], Maybe[Any]]) -> Nothing:
         """
         If `Nothing` returns `Nothing`
         """
         return self
 
     def bind_partial_through(
-        self, func: Callable[[T, Any], Maybe[Any]], *args, **kwargs
+        self, func: Callable[[V, Any], Maybe[Any]], *args, **kwargs
     ) -> Nothing:
         """
         If `Nothing` returns `Nothing`
@@ -187,7 +189,7 @@ class Nothing(abstract.Monad[None]):
         return self
 
     def bind_result(
-        self, func: Callable[[T], result.Result[S, E]]
+        self, func: Callable[[V], result.Result[S, E]]
     ) -> result.Ok[Nothing]:
         """
         If `Nothing` returns `Ok[Nothing]`
