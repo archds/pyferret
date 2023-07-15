@@ -134,6 +134,9 @@ class Ok(abstract.Monad[T]):
         """
         raise ValueError("Attempt to get err value on Ok")
 
+    def __repr__(self) -> str:
+        return f"Ok {self._value}"
+
 
 class Err(abstract.Monad[E]):
     def fmap(self, func: Callable[[V], K]) -> Err[E]:
@@ -223,6 +226,9 @@ class Err(abstract.Monad[E]):
         Unsafe return err inner value
         """
         return self._value
+
+    def __repr__(self) -> str:
+        return f"Err {self._value}"
 
 
 Result: TypeAlias = Ok[T] | Err[E]

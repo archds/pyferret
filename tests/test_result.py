@@ -223,3 +223,18 @@ def test_value_getter() -> None:
     with pytest.raises(expected_exception=ValueError):
         err.ok_value
         ok.err_value
+
+
+def test_cmp() -> None:
+    assert Ok(1) == Ok(1)
+    assert Ok(1) != Ok(2)
+    assert Err("1") == Err("1")
+    assert Err("1") != Err("2")
+    assert Ok(1) != Err(1)
+
+
+def test_hash() -> None:
+    assert len({Ok(1), Ok(2), Ok("3"), Err(1), Err(2), Err(3)}) == 6
+    assert len({Ok(1), Ok(1)}) == 1
+    assert len({Ok(1), Err(1)}) == 2
+    assert len({Ok("1"), Err(1), Err("1"), "3", 5}) == 5

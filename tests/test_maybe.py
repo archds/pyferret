@@ -197,3 +197,16 @@ def test_value_or_default() -> None:
 
     assert just_val.get_value_or(default) == just_val._value
     assert nothing_val.get_value_or(default) == default
+
+
+def test_cmp() -> None:
+    assert Just(1) == Just(1)
+    assert Just(1) != Just(2)
+    assert Just(1) != Nothing()
+    assert Nothing() == Nothing()
+
+
+def test_hash() -> None:
+    assert len({Just(1), Just(2), Just(1), Just(2), Nothing(), Nothing()}) == 3
+    assert len({Just(1), Just("a")}) == 2
+    assert len({Nothing(), Just(1), Just("1")}) == 3

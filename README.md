@@ -330,8 +330,9 @@ _Work in progress..._
 - [ ] Complete docs
 - [ ] `Result` methods for working with exceptions and traceback
 - [ ] Helper functions
-  - [ ] From optional for `Maybe`
-  - [ ] Concat list
+  - [x] From optional for `Maybe`
+  - [x] Concat list
+  - [ ] ...
 - [x] `Maybe` test coverage
 - [x] `Result` test coverage
 - [ ] `abstract` test coverage
