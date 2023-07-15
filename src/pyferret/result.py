@@ -10,6 +10,7 @@ S = TypeVar("S")
 U = TypeVar("U")
 V = TypeVar("V", bound=object)
 K = TypeVar("K", bound=object)
+EXC = TypeVar("EXC", bound=Exception)
 
 
 class Ok(abstract.Monad[T]):
@@ -132,7 +133,7 @@ class Ok(abstract.Monad[T]):
         """
         Raises ValueError
         """
-        raise ValueError("Attempt to get err value on Ok")
+        raise ValueError(f"Attempt to get err value on Ok: {self._value}")
 
     def __repr__(self) -> str:
         return f"Ok {self._value}"
@@ -216,9 +217,15 @@ class Err(abstract.Monad[E]):
     @property
     def ok_value(self) -> NoReturn:
         """
-        raises ValueError
+        Raises ValueError
+        Supports Exceptions and shows a cause if inner value is BaseException subclass
         """
-        raise ValueError("Attempt to get ok value on Err")
+        if isinstance(self._value, BaseException):
+            raise ValueError(
+                f"Attempt to get ok value on Err: {self._value.__class__.__name__}"
+            ) from self._value
+
+        raise ValueError(f"Attempt to get ok value on Err: {self._value}")
 
     @property
     def err_value(self) -> E:

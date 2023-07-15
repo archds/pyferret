@@ -238,3 +238,25 @@ def test_hash() -> None:
     assert len({Ok(1), Ok(1)}) == 1
     assert len({Ok(1), Err(1)}) == 2
     assert len({Ok("1"), Err(1), Err("1"), "3", 5}) == 5
+
+
+def test_exception_support() -> None:
+    def x(x: float) -> Result[float, ZeroDivisionError]:
+        try:
+            return Ok(x / 0)
+        except ZeroDivisionError as exc:
+            return Err(exc)
+
+    def y(x: float) -> Result[float, ZeroDivisionError]:
+        return Ok(x)
+
+    def z(x: float) -> Result[float, ZeroDivisionError]:
+        return Ok(x)
+
+    result = Ok(1.5).bind(z).bind(y).bind(x)
+
+    with pytest.raises(expected_exception=ValueError) as excinfo:
+        result.ok_value
+
+    assert "ZeroDivisionError" in str(excinfo.value)
+    assert isinstance(excinfo.value.__cause__, ZeroDivisionError)

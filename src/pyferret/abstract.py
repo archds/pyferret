@@ -30,6 +30,9 @@ class Context(Generic[T]):
     def __repr__(self) -> str:
         raise NotImplementedError
 
+    def __rich_repr__(self):
+        yield self._value
+
 
 class Functor(Context[T]):
     @abstractmethod
