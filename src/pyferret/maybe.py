@@ -56,12 +56,8 @@ class Just(abstract.Monad[T]):
             - return `Just[T]` if func result `Just[Any]`
             - return `Nothing` if func result `Nothing`
         """
-        result = func(self._value)
-
-        if result.is_some:
-            return self
-        else:
-            return Nothing()
+        _ = func(self._value)
+        return self
 
     def bind_partial(
         self,
@@ -86,12 +82,8 @@ class Just(abstract.Monad[T]):
             - return `Just[T]` if func result `Just[Any]`
             - return `Nothing` if func result `Nothing`
         """
-        result = func(self._value, *args, **kwargs)
-
-        if result.is_some:
-            return self
-        else:
-            return Nothing()
+        _ = func(self._value, *args, **kwargs)
+        return self
 
     def bind_result(
         self, func: Callable[[T], result.Result[S, E]]

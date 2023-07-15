@@ -113,6 +113,26 @@ def test_bind() -> None:
     assert nothing_on_nothing._value is None
 
 
+def test_bind_through(mocker: MockerFixture) -> None:
+    foo = mocker.MagicMock(return_value=Just(30))
+    bar = mocker.MagicMock(return_value=Nothing())
+
+    just_val = Just(1)
+    nothing_val = Nothing()
+
+    just_result = just_val.bind_through(foo)
+    nothing_result = nothing_val.bind_through(foo)
+    just_on_nothing = just_val.bind_through(bar)
+    nothing_on_nothing = nothing_val.bind_through(bar)
+
+    foo.assert_called_once_with(just_val._value)
+
+    assert just_result._value == 1
+    assert nothing_result._value is None
+    assert just_on_nothing._value == 1
+    assert nothing_on_nothing._value is None
+
+
 def test_bind_partial() -> None:
     def multiply(x: int, y: int) -> Maybe[int]:
         return Just(x * y)
@@ -129,6 +149,7 @@ def test_bind_partial() -> None:
 
 def test_bind_partial_through(mocker: MockerFixture) -> None:
     foo = mocker.MagicMock(return_value=Just(30))
+    bar = mocker.MagicMock(return_value=Nothing())
 
     just_val = Just(1)
     nothing_val = Nothing()
@@ -136,13 +157,18 @@ def test_bind_partial_through(mocker: MockerFixture) -> None:
     args = (1, 2, 3)
     kwargs = {"a": 1, "b": 2, "c": 3}
 
-    just_result = just_val.fmap_partial(foo, *args, **kwargs)
-    nothing_result = nothing_val.fmap_partial(foo, *args, **kwargs)
+    just_result = just_val.bind_partial_through(foo, *args, **kwargs)
+    nothing_result = nothing_val.bind_partial_through(foo, *args, **kwargs)
+    just_on_nothing = just_val.bind_partial_through(bar, *args, **kwargs)
+    nothing_on_nothing = nothing_val.bind_partial_through(bar, *args, **kwargs)
 
     foo.assert_called_once_with(just_val._value, *args, **kwargs)
+    bar.assert_called_once_with(just_val._value, *args, **kwargs)
 
-    assert just_result._value == foo.return_value
+    assert just_result._value == 1
     assert nothing_result._value is None
+    assert just_on_nothing._value == 1
+    assert nothing_on_nothing._value is None
 
 
 def test_bind_result() -> None:
@@ -210,3 +236,8 @@ def test_hash() -> None:
     assert len({Just(1), Just(2), Just(1), Just(2), Nothing(), Nothing()}) == 3
     assert len({Just(1), Just("a")}) == 2
     assert len({Nothing(), Just(1), Just("1")}) == 3
+
+
+def test_repr() -> None:
+    assert repr(Just(1)) == "Just 1"
+    assert repr(Nothing()) == "Nothing"

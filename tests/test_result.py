@@ -207,7 +207,7 @@ def test_boolean_checks() -> None:
     err = Err("200")
 
     assert ok.is_ok
-    assert not err.is_ok
+    assert not ok.is_err
 
     assert err.is_err
     assert not err.is_ok
@@ -222,6 +222,8 @@ def test_value_getter() -> None:
 
     with pytest.raises(expected_exception=ValueError):
         err.ok_value
+
+    with pytest.raises(expected_exception=ValueError):
         ok.err_value
 
 
@@ -260,3 +262,8 @@ def test_exception_support() -> None:
 
     assert "ZeroDivisionError" in str(excinfo.value)
     assert isinstance(excinfo.value.__cause__, ZeroDivisionError)
+
+
+def test_repr() -> None:
+    assert repr(Ok(1)) == "Ok 1"
+    assert repr(Err("nana")) == "Err nana"

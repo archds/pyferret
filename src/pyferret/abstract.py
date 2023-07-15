@@ -28,10 +28,10 @@ class Context(Generic[T]):
 
     @abstractmethod
     def __repr__(self) -> str:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def __rich_repr__(self):
-        yield self._value
+        yield self._value  # pragma: no cover
 
 
 class Functor(Context[T]):
@@ -41,7 +41,7 @@ class Functor(Context[T]):
         Applying `func` on inner value of context
         """
 
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
 
 class Applicative(Functor[T]):
@@ -55,4 +55,4 @@ class Monad(Applicative[T]):
         Applying `func` which returns a Monad on inner value of context and return its
         result
         """
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
