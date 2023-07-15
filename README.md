@@ -2,6 +2,7 @@
 
 ![Python 3.11](https://img.shields.io/badge/python-3.11-3572a5.svg)
 [![PyPI version](https://badge.fury.io/py/pyferret.svg)](https://badge.fury.io/py/pyferret)
+![Coverage](coverage.svg)
 
 This Python library provides functional programming tools like the "maybe" and "result" monads. These monads help handle optional values and error handling in a functional way. The "maybe" monad deals with null or undefined values, while the "result" monad manages computations that may fail and return an error. These tools promote clean, reliable, and concise code by promoting immutability, separation of concerns, and composability. **Not yet ready for production.**
 
@@ -328,7 +329,7 @@ _Work in progress..._
 - [x] `Maybe` methods that returns value out of contexts
 - [x] `Result` methods that returns value out of contexts
 - [ ] Complete docs
-- [ ] `Result` methods for working with exceptions and traceback
+- [x] `Result` methods for working with exceptions and traceback
 - [ ] Helper functions
   - [x] From optional for `Maybe`
   - [x] Concat list

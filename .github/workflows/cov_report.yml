@@ -1,0 +1,31 @@
+name: Coverage report
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+
+jobs:
+  generate_report:
+    name: Generate codecov report and badge
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install poetry
+          poetry install
+
+      - name: Generate .coverage
+        run: poetry run pytest --cov=pyferret
+
+      - name: Generage badge
+        run: poetry run coverage-badge -o coverage.svg -f
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+            commit_message: Coverage report
+            file_pattern: '*.svg'
