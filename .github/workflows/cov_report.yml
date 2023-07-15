@@ -9,6 +9,9 @@ jobs:
     name: Generate codecov report and badge
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
