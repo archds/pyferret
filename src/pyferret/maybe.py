@@ -119,7 +119,7 @@ class Just(abstract.Monad[T]):
         return self._value
 
     def __repr__(self) -> str:
-        return f"Just {self._value}"
+        return f"Just {repr(self._value)}"
 
 
 class Nothing(abstract.Monad[None]):
