@@ -3,7 +3,7 @@
         {
             "label": "format",
             "type": "shell",
-            "command": "poetry run isort -q .;poetry run autoflake -ri --remove-all-unused-imports .;poetry run black -q .",
+            "command": "poetry run ruff --fix . && poetry run black -q .",
             "presentation": {
                 "reveal": "silent",
                 "clear": true
