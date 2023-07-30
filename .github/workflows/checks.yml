@@ -6,36 +6,41 @@ on:
       - "main"
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v3
-            - uses: actions/setup-python@v3
-              with:
-                python-version: "3.11"
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
 
-            - name: Install dependencies
-              run: |
-                python -m pip install --upgrade pip
-                python -m pip install poetry
-                poetry install
+      - uses: DavidAnson/markdownlint-cli2-action@v11
+        with:
+          globs: "**/*.md"
 
-            - name: Check codestyle with black
-              run: poetry run black . --check --verbose
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.11"
 
-            - name: Lint with Ruff
-              run: poetry run ruff .
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install poetry
+          poetry install
 
-            - name: Typecheck with Pyright
-              run: poetry run pyright
+      - name: Check codestyle with black
+        run: poetry run black . --check --verbose
 
-            - name: Typecheck with Mypy
-              run: |
-                cd src/pyferret
-                poetry run mypy .
+      - name: Lint with Ruff
+        run: poetry run ruff .
 
-            - name: Build package
-              run: poetry build
+      - name: Typecheck with Pyright
+        run: poetry run pyright
 
-            - name: Run tests
-              run: poetry run pytest
+      - name: Typecheck with Mypy
+        run: |
+          cd src/pyferret
+          poetry run mypy .
+
+      - name: Build package
+        run: poetry build
+
+      - name: Run tests
+        run: poetry run pytest
