@@ -135,8 +135,20 @@ class Ok(abstract.Monad[T]):
         """
         raise ValueError(f"Attempt to get err value on Ok: {self._value}")
 
+    def get_ok_or(self, default: object) -> T:
+        """
+        Returns ok value
+        """
+        return self._value
+
+    def get_err_or(self, default: S) -> S:
+        """
+        Returns default
+        """
+        return default
+
     def __repr__(self) -> str:
-        return f"Ok {self._value}"
+        return f"Ok {repr(self._value)}"
 
 
 class Err(abstract.Monad[E]):
@@ -234,8 +246,20 @@ class Err(abstract.Monad[E]):
         """
         return self._value
 
+    def get_ok_or(self, default: S) -> S:
+        """
+        Returns default
+        """
+        return default
+
+    def get_err_or(self, default: object) -> E:
+        """
+        Returns err value
+        """
+        return self._value
+
     def __repr__(self) -> str:
-        return f"Err {self._value}"
+        return f"Err {repr(self._value)}"
 
 
 Result: TypeAlias = Ok[T] | Err[E]

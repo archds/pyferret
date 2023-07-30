@@ -266,4 +266,4 @@ def test_exception_support() -> None:
 
 def test_repr() -> None:
     assert repr(Ok(1)) == "Ok 1"
-    assert repr(Err("nana")) == "Err nana"
+    assert repr(Err("nana")) == "Err 'nana'"
