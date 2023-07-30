@@ -25,6 +25,18 @@ Not pretending on full correspondence with theoretical part of related instrumen
       - [Mapping functions](#mapping-functions)
       - [Binding functions](#binding-functions)
   - [Result](#result)
+    - [How `Result` can help with function composition?](#how-result-can-help-with-function-composition)
+    - [`Result` API](#result-api)
+      - [Initialize instance](#initialize-instance-1)
+      - [`isintance` checks](#isintance-checks-1)
+      - [Unsafe accessing the value](#unsafe-accessing-the-value-1)
+      - [Safe accessing the value](#safe-accessing-the-value-1)
+      - [Boolean checks](#boolean-checks-1)
+      - [Mapping functions](#mapping-functions-1)
+      - [Binding functions](#binding-functions-1)
+  - [Helpers](#helpers)
+    - [Maybe from optional](#maybe-from-optional)
+    - [List concatenation](#list-concatenation)
   - [TODO](#todo)
 
 ## Installation
@@ -179,7 +191,7 @@ if result.is_some: ...
 
 ### How `Maybe` can help with function composition?
 
-`Maybe` is can be treated as `Just[Any] | Nothing`, where `Just` and `Nothing` is a `Context` that stores a value, but `Nothing` not providing access to inner value because meaning of this word say that there's can't be a value.
+`Maybe` can be treated as `Just[Any] | Nothing`, where `Just` and `Nothing` is a `Context` that stores a value, but `Nothing` not providing access to inner value because meaning of this word say that there's can't be a value.
 
 We defined that Maybe is a monad, then it have `fmap`, `bind` and other helpful methods.
 
@@ -322,14 +334,236 @@ Nothing
 
 ## Result
 
-_Work in progress..._
+The Result Monad is a way to encapsulate the outcome of a computation in a type that can represent either a successful result or an error.
+
+A little example:
+
+```python
+from pyferret.result import Result, Ok, Err
+
+def compute_or_error() -> Result[int, int]: ...
+
+result = compute_or_error()
+
+# We can check success of operation by accessing some properties
+if result.is_ok: ...
+
+if result.is_err: ...
+
+ERROR_CODE = 500
+
+# If side-effect may fail
+def side_effect() -> Result[None, ERROR_CODE]: ...
+
+result = side_effect()
+
+if result.is_ok: ...
+```
+
+### How `Result` can help with function composition?
+
+`Result` can be treated as `Ok[Any] | Err[Any]`, where both `Ok` and `Err` is a `Context` that stores a value, but with semantic about operation result.
+
+Result also have all Monad functions - `fmap`, `bind`.
+
+### `Result` API
+
+#### Initialize instance
+
+```python
+>>> ok = Ok(1)
+>>> err = Err("error")
+```
+
+#### `isintance` checks
+
+```python
+>>> isinstance(ok, Ok)
+True
+>>> isinstance(err, Err)
+True
+```
+
+#### Unsafe accessing the value
+
+```python
+>>> ok.ok_value
+1
+>>> ok.err_value
+ValueError: Attempt to get err value on Ok: 1
+>>> err.err_value
+'error'
+>>> err.ok_value
+ValueError: Attempt to get ok value on Err: error
+```
+
+#### Safe accessing the value
+
+```python
+>>> ok.get_ok_or("default")
+1
+>>> ok.get_err_or("default")
+'default'
+>>> err.get_ok_or("default")
+'default'
+>>> err.get_err_or("default")
+'error'
+```
+
+#### Boolean checks
+
+```python
+>>> ok.is_ok
+True
+>>> ok.is_err
+False
+>>> err.is_ok
+False
+>>> err.is_err
+True
+```
+
+#### Mapping functions
+
+Basic `fmap`:
+
+```python
+>>> ok.fmap(lambda x: x * 3 * 10)
+Ok 30
+>>> err.fmap(lambda x: x * 3 * 10)
+Err error
+```
+
+We may need make side effect with value inside `Ok`, but preserve this value and ignore function return:
+
+```python
+>>> ok.fmap_through(lambda x: print(x))
+1  # print(x)
+Ok 1
+>>> err.fmap_through(lambda x: print(x))
+Err 'error'
+```
+
+Partial application mapped function:
+
+```python
+>>> ok.fmap_partial(lambda x, y: x * y, y=25)
+Ok 25
+>>> err.fmap_partial(lambda x, y: x * y, y=25)
+Err 'error'
+```
+
+Partial application with preserving inner value, `fmap_through` and `fmap_partial` combined:
+
+```python
+>>> ok.fmap_partial_through(lambda x, y: print(x + y), y=25)
+26  # print(x + y)
+Ok 1
+>>> err.fmap_partial_through(lambda x, y: print(x + y), y=25)
+Err 'error'
+```
+
+#### Binding functions
+
+Basic `bind`:
+
+```python
+>>> ok.bind(lambda x: Ok(x + 10))
+Ok 11
+>>> err.bind(lambda x: Ok(x + 10))
+Err 'error'
+>>> ok.bind(lambda x: Err("another error"))
+Err 'another error'
+>>> err.bind(lambda x: Err("another error"))
+Err 'error'
+```
+
+Binding and preserving inner value only in case of `Ok`:
+
+```python
+>>> def side_effect(x: int) -> Result[str, str]:
+...      print(x)
+...      return Ok("Ok")
+...
+>>> ok.bind_through(side_effect)
+1
+Ok 1
+>>> err.bind_through(side_effect)
+Err 'error'
+
+# In that case Err will be taken from `side_effect_error` function
+>>> def side_effect_error(x: int) -> Result[str, str]:
+...     print(x)
+...     return Err("side effect error")
+>>> ok.bind_through(side_effect_error)
+1
+Err 'side effect error'
+>>> err.bind_through(side_effect_error)
+Err 'error'
+```
+
+Partial application binding function:
+
+```python
+>>> ok.bind_partial(lambda x,y: Ok(x + y), y=34)
+Ok 35
+>>> ok.bind_partial(lambda x,y: Err(x + y), y=34)
+Err 35
+>>> err.bind_partial(lambda x,y: Ok(x + y), y=34)
+Err 'error'
+>>> err.bind_partial(lambda x,y: Err(x + y), y=34)
+Err 'error'
+```
+
+Partial application and preserving inner value only if result is `Ok`:
+
+```python
+>>> def side_effect(x: int, y: int) -> Result[str, int]:
+...     print(x + y)
+...     return Ok("Ok")
+...
+>>> ok.bind_partial_through(side_effect, y=25)
+26
+Ok 1
+>>> err.bind_partial_through(side_effect, y=25)
+Err 'error'
+>>> ok.bind_partial_through(side_effect_error, y=25)
+26
+Err 'side effect error'
+>>> err.bind_partial_through(side_effect_error, y=25)
+Err 'error'
+```
+
+## Helpers
+
+Pyfferet provides a set of convenient helper functions to simplify and assist with common tasks.
+
+### Maybe from optional
+
+```python
+>>> from pyferret.helpers import from_optional
+>>> a: int | None = 12
+>>> from_optional(a)
+Just 12
+>>> a: int | None = None
+>>> from_optional(a)
+Nothing
+```
+
+### List concatenation
+
+```python
+>>> concat([[1,2,3], [4,5,6], [7,8,9]])
+[1, 2, 3, 4, 5, 6, 7, 8, 9]
+```
 
 ## TODO
 
 - [x] `Maybe` methods that returns value out of contexts
 - [x] `Result` methods that returns value out of contexts
-- [ ] Complete docs
+- [x] Complete docs
 - [x] `Result` methods for working with exceptions and traceback
+- [ ] `Result` methods for fmap and bind `Err` context
 - [ ] Helper functions
   - [x] From optional for `Maybe`
   - [x] Concat list
