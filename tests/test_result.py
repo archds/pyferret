@@ -226,6 +226,11 @@ def test_value_getter() -> None:
     with pytest.raises(expected_exception=ValueError):
         ok.err_value
 
+    assert ok.get_ok_or("default") == ok._value
+    assert ok.get_err_or("default") == "default"
+    assert err.get_ok_or("default") == "default"
+    assert err.get_err_or("default") == err._value
+
 
 def test_cmp() -> None:
     assert Ok(1) == Ok(1)
