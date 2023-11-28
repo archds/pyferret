@@ -576,3 +576,4 @@ Nothing
   - [x] typecheck
   - [x] codestyle
 - [x] Hash and compare methods
+- [x] Better `*args` and `**kwargs` typing
