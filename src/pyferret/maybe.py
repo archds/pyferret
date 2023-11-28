@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable, NoReturn, TypeAlias, TypeVar
+from typing import Any, Callable, Concatenate, NoReturn, ParamSpec, TypeAlias, TypeVar
 
 from pyferret import abstract, result
 
@@ -10,6 +10,7 @@ U = TypeVar("U")
 E = TypeVar("E")
 V = TypeVar("V", bound=object)
 K = TypeVar("K", bound=object)
+P = ParamSpec("P")
 
 
 class Just(abstract.Monad[T]):
@@ -26,7 +27,12 @@ class Just(abstract.Monad[T]):
         _ = func(self._value)
         return self
 
-    def fmap_partial(self, func: Callable[[T, Any], S], *args, **kwargs) -> Just[S]:
+    def fmap_partial(
+        self,
+        func: Callable[Concatenate[T, P], S],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Just[S]:
         """
         If `Just[T]` - applies `partial((T -> S), *args, **kwargs)` to `T` and returns
         `Just[S]`
@@ -34,7 +40,10 @@ class Just(abstract.Monad[T]):
         return Just(func(self._value, *args, **kwargs))
 
     def fmap_partial_through(
-        self, func: Callable[[T, Any], Any], *args, **kwargs
+        self,
+        func: Callable[Concatenate[T, P], Any],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> Just[T]:
         """
         If `Just[T]` - applies `partial((T -> Any), *args, **kwargs)` to `T` and returns
@@ -61,9 +70,9 @@ class Just(abstract.Monad[T]):
 
     def bind_partial(
         self,
-        func: Callable[[T, Any], Maybe[S]],
-        *args,
-        **kwargs,
+        func: Callable[Concatenate[T, P], Maybe[S]],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> Maybe[S]:
         """
         If `Just[T]` - applies `partial((T -> Maybe[S]), *args, **kwargs)` to `T` and
@@ -73,9 +82,9 @@ class Just(abstract.Monad[T]):
 
     def bind_partial_through(
         self,
-        func: Callable[[T, Any], Maybe[Any]],
-        *args,
-        **kwargs,
+        func: Callable[Concatenate[T, P], Maybe[Any]],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> Maybe[T]:
         """
         If `Just[T]` - apply `partial((T -> Maybe[S]), *args, **kwargs)` and:
@@ -132,7 +141,12 @@ class Nothing(abstract.Monad[None]):
         """
         return self
 
-    def fmap_partial(self, func: Callable[[V, Any], K], *args, **kwargs) -> Nothing:
+    def fmap_partial(
+        self,
+        func: Callable[Concatenate[V, P], K],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Nothing:
         """
         If `Nothing` returns `Nothing`
         """
@@ -145,7 +159,10 @@ class Nothing(abstract.Monad[None]):
         return self
 
     def fmap_partial_through(
-        self, func: Callable[[V, Any], Any], *args, **kwargs
+        self,
+        func: Callable[Concatenate[V, P], Any],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> Nothing:
         """
         If `Nothing` returns `Nothing`
@@ -159,7 +176,10 @@ class Nothing(abstract.Monad[None]):
         return self
 
     def bind_partial(
-        self, func: Callable[[V, Any], Maybe[S]], *args, **kwargs
+        self,
+        func: Callable[Concatenate[V, P], Maybe[S]],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> Nothing:
         """
         If `Nothing` returns `Nothing`
@@ -173,7 +193,10 @@ class Nothing(abstract.Monad[None]):
         return self
 
     def bind_partial_through(
-        self, func: Callable[[V, Any], Maybe[Any]], *args, **kwargs
+        self,
+        func: Callable[Concatenate[V, P], Maybe[Any]],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> Nothing:
         """
         If `Nothing` returns `Nothing`

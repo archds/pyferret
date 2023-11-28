@@ -33,11 +33,14 @@ def test_fmap() -> None:
 
 
 def test_fmap_partial() -> None:
+    def example(x: int, y: int) -> int:
+        return x * y
+
     ok = Ok(200)
     err = Err("200")
 
-    ok_fmap = ok.fmap_partial(lambda x, y: x * y, y=32)
-    err_fmap = err.fmap_partial(lambda x, y: x * y, y=32)
+    ok_fmap = ok.fmap_partial(example, y=32)
+    err_fmap = err.fmap_partial(example, y=32)
 
     assert ok_fmap._value == ok._value * 32
     assert err_fmap._value == err_fmap._value
@@ -60,14 +63,17 @@ def test_fmap_through(mocker: MockerFixture) -> None:
 def test_fmap_partial_through(mocker: MockerFixture) -> None:
     foo = mocker.MagicMock(return_value=30)
 
+    def example(n: int, *args: int, **kwargs: int) -> int:
+        return foo(n, *args, **kwargs)
+
     ok = Ok(200)
     err = Err("200")
 
     args = (1, 2, 3)
     kwargs = {"a": 1, "b": 2, "c": 3}
 
-    ok_fmap = ok.fmap_partial_through(foo, *args, **kwargs)
-    err_fmap = err.fmap_partial_through(foo, *args, **kwargs)
+    ok_fmap = ok.fmap_partial_through(example, *args, **kwargs)
+    err_fmap = err.fmap_partial_through(example, *args, **kwargs)
 
     foo.assert_called_once_with(ok._value, *args, **kwargs)
     assert ok_fmap._value == ok._value
@@ -147,17 +153,23 @@ def test_bind_partial_through(mocker: MockerFixture) -> None:
     foo_ok = mocker.MagicMock(return_value=Ok(30))
     foo_err = mocker.MagicMock(return_value=Err("Error"))
 
+    def bar_ok(n: int, *args: int, **kwargs: int) -> Result[int, str]:
+        return foo_ok(n, *args, **kwargs)
+
+    def bar_err(n: int, *args: int, **kwargs: int) -> Result[int, str]:
+        return foo_err(n, *args, **kwargs)
+
     ok = Ok(200)
     err = Err("200")
 
     args = (1, 2, 3)
     kwargs = {"a": 1, "b": 2, "c": 3}
 
-    ok_on_ok = ok.bind_partial_through(foo_ok, *args, **kwargs)
-    ok_on_err = ok.bind_partial_through(foo_err, *args, **kwargs)
+    ok_on_ok = ok.bind_partial_through(bar_ok, *args, **kwargs)
+    ok_on_err = ok.bind_partial_through(bar_err, *args, **kwargs)
 
-    err_on_ok = err.bind_partial_through(foo_ok, *args, **kwargs)
-    err_on_err = err.bind_partial_through(foo_err, *args, **kwargs)
+    err_on_ok = err.bind_partial_through(bar_ok, *args, **kwargs)
+    err_on_err = err.bind_partial_through(bar_err, *args, **kwargs)
 
     foo_ok.assert_called_once_with(ok._value, *args, **kwargs)
     foo_err.assert_called_once_with(ok._value, *args, **kwargs)

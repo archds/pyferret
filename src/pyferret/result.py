@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable, NoReturn, TypeAlias, TypeVar
+from typing import Any, Callable, Concatenate, NoReturn, ParamSpec, TypeAlias, TypeVar
 
 from pyferret import abstract, maybe
 
@@ -11,6 +11,7 @@ U = TypeVar("U")
 V = TypeVar("V", bound=object)
 K = TypeVar("K", bound=object)
 EXC = TypeVar("EXC", bound=Exception)
+P = ParamSpec("P")
 
 
 class Ok(abstract.Monad[T]):
@@ -20,13 +21,18 @@ class Ok(abstract.Monad[T]):
         """
         return Ok(func(self._value))
 
-    def fmap_partial(self, func: Callable[[T, Any], S], *args, **kwargs) -> Ok[S]:
+    def fmap_partial(
+        self,
+        func: Callable[Concatenate[T, P], S],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Ok[S]:
         """
         If `Ok[T]` - applies `partial((T -> S), *args, **kwargs)` and returns `Ok[S]`
         """
         return Ok(func(self._value, *args, **kwargs))
 
-    def fmap_through(self, func: Callable[[T], Result[Any, E]]) -> Ok[T]:
+    def fmap_through(self, func: Callable[[T], Any]) -> Ok[T]:
         """
         If `Ok[T]` - applies `(T -> Any)` to `T` and returns `Ok[T]`
         """
@@ -35,7 +41,10 @@ class Ok(abstract.Monad[T]):
         return self
 
     def fmap_partial_through(
-        self, func: Callable[[T, Any], Result[Any, E]], *args, **kwargs
+        self,
+        func: Callable[Concatenate[T, P], Any],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> Ok[T]:
         """
         If `Ok[T]` - applies `partial((T -> Any), *args, **kwargs)` to `T` and returns
@@ -52,7 +61,10 @@ class Ok(abstract.Monad[T]):
         return func(self._value)
 
     def bind_partial(
-        self, func: Callable[[T, Any], Result[S, E]], *args, **kwargs
+        self,
+        func: Callable[Concatenate[T, P], Result[S, E]],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> Result[S, E]:
         """
         If `Ok[T]` - applies `partial((T -> Result[S, E]), *args, **kwargs)` to `T` and
@@ -74,7 +86,10 @@ class Ok(abstract.Monad[T]):
             return self
 
     def bind_partial_through(
-        self, func: Callable[[T, Any], Result[S, E]], *args, **kwargs
+        self,
+        func: Callable[Concatenate[T, P], Result[S, E]],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> Result[T, E]:
         """
         If `Ok[T]` - apply `partial((T -> Result[S, E]), *args, **kwargs)` and:
@@ -158,20 +173,28 @@ class Err(abstract.Monad[E]):
         """
         return self
 
-    def fmap_partial(self, func: Callable[[V, Any], K], *args, **kwargs) -> Err[E]:
+    def fmap_partial(
+        self,
+        func: Callable[Concatenate[V, P], K],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> Err[E]:
         """
         If `Err[E]` returns `Err[E]`
         """
         return self
 
-    def fmap_through(self, func: Callable[[V], Result[Any, S]]) -> Err[E]:
+    def fmap_through(self, func: Callable[[V], Any]) -> Err[E]:
         """
         If `Err[E]` returns `Err[E]`
         """
         return self
 
     def fmap_partial_through(
-        self, func: Callable[[V, Any], Result[Any, S]], *args, **kwargs
+        self,
+        func: Callable[Concatenate[V, P], Any],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> Err[E]:
         """
         If `Err[E]` returns `Err[E]`
@@ -185,7 +208,10 @@ class Err(abstract.Monad[E]):
         return self
 
     def bind_partial(
-        self, func: Callable[[V, Any], Result[S, U]], *args, **kwargs
+        self,
+        func: Callable[Concatenate[V, P], Result[S, E]],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> Err[E]:
         """
         If `Err[E]` returns `Err[E]`
@@ -199,7 +225,10 @@ class Err(abstract.Monad[E]):
         return self
 
     def bind_partial_through(
-        self, func: Callable[[V, Any], Result[S, U]], *args, **kwargs
+        self,
+        func: Callable[Concatenate[V, P], Result[S, E]],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> Err[E]:
         """
         If `Err[E]` returns `Err[E]`
