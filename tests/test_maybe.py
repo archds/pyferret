@@ -52,32 +52,40 @@ def test_fmap_through(mocker: MockerFixture) -> None:
 def test_fmap_partial(mocker: MockerFixture) -> None:
     foo = mocker.MagicMock(return_value=30)
 
+    def example(n: int, *args: int, **kwargs: int):
+        return foo(n, *args, **kwargs) + n + sum(args) + sum(kwargs.values())
+
     just_val = Just(1)
     nothing_val = Nothing()
 
     args = (1, 2, 3)
     kwargs = {"a": 1, "b": 2, "c": 3}
 
-    just_result = just_val.fmap_partial(foo, *args, **kwargs)
-    nothing_result = nothing_val.fmap_partial(foo, *args, **kwargs)
+    just_result = just_val.fmap_partial(example, *args, **kwargs)
+    nothing_result = nothing_val.fmap_partial(example, *args, **kwargs)
 
     foo.assert_called_once_with(just_val._value, *args, **kwargs)
 
-    assert just_result._value == foo.return_value
+    assert just_result._value == (
+        foo.return_value + just_val._value + sum(args) + sum(kwargs.values())
+    )
     assert nothing_result._value is None
 
 
 def test_fmap_partial_through(mocker: MockerFixture) -> None:
     foo = mocker.MagicMock(return_value=30)
 
+    def example(n: int, *args: int, **kwargs: int):
+        return foo(n, *args, **kwargs) + n + sum(args) + sum(kwargs.values())
+
     just_val = Just(1)
     nothing_val = Nothing()
 
     args = (1, 2, 3)
     kwargs = {"a": 1, "b": 2, "c": 3}
 
-    just_result = just_val.fmap_partial_through(foo, *args, **kwargs)
-    nothing_result = nothing_val.fmap_partial_through(foo, *args, **kwargs)
+    just_result = just_val.fmap_partial_through(example, *args, **kwargs)
+    nothing_result = nothing_val.fmap_partial_through(example, *args, **kwargs)
 
     foo.assert_called_once_with(just_val._value, *args, **kwargs)
 
@@ -148,8 +156,14 @@ def test_bind_partial() -> None:
 
 
 def test_bind_partial_through(mocker: MockerFixture) -> None:
-    foo = mocker.MagicMock(return_value=Just(30))
+    foo = mocker.MagicMock(return_value=30)
     bar = mocker.MagicMock(return_value=Nothing())
+
+    def example_1(n: int, *args: int, **kwargs: int):
+        return Just(foo(n, *args, **kwargs) + n + sum(args) + sum(kwargs.values()))
+
+    def example_2(n: int, *args: int, **kwargs: int):
+        return bar(n, *args, **kwargs)
 
     just_val = Just(1)
     nothing_val = Nothing()
@@ -157,10 +171,10 @@ def test_bind_partial_through(mocker: MockerFixture) -> None:
     args = (1, 2, 3)
     kwargs = {"a": 1, "b": 2, "c": 3}
 
-    just_result = just_val.bind_partial_through(foo, *args, **kwargs)
-    nothing_result = nothing_val.bind_partial_through(foo, *args, **kwargs)
-    just_on_nothing = just_val.bind_partial_through(bar, *args, **kwargs)
-    nothing_on_nothing = nothing_val.bind_partial_through(bar, *args, **kwargs)
+    just_result = just_val.bind_partial_through(example_1, *args, **kwargs)
+    nothing_result = nothing_val.bind_partial_through(example_1, *args, **kwargs)
+    just_on_nothing = just_val.bind_partial_through(example_2, *args, **kwargs)
+    nothing_on_nothing = nothing_val.bind_partial_through(example_2, *args, **kwargs)
 
     foo.assert_called_once_with(just_val._value, *args, **kwargs)
     bar.assert_called_once_with(just_val._value, *args, **kwargs)
