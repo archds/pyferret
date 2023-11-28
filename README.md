@@ -4,7 +4,7 @@
 [![PyPI version](https://badge.fury.io/py/pyferret.svg)](https://badge.fury.io/py/pyferret)
 ![Coverage](coverage.svg)
 
-This Python library provides functional programming tools like the "maybe" and "result" monads. These monads help handle optional values and error handling in a functional way. The "maybe" monad deals with null or undefined values, while the "result" monad manages computations that may fail and return an error. These tools promote clean, reliable, and concise code by promoting immutability, separation of concerns, and composability. **Not yet ready for production.**
+This Python library provides functional programming tools like the "maybe" and "result" monads. These monads help handle optional values and error handling in a functional way. The "maybe" monad deals with null or undefined values, while the "result" monad manages computations that may fail and return an error. These tools promote clean, reliable, and concise code by promoting immutability, separation of concerns, and composability.
 
 Not pretending on full correspondence with theoretical part of related instruments, because of not all of them can be implemented in Python context with comfortable usage. There may be implemented not all details that required by some abstractions in FP or provided some additional stuff for usability.
 
