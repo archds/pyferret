@@ -3,7 +3,7 @@ authors = ["archds <dsalekseev11@gmail.com>"]
 description = "Functional programming tools for Python"
 name = "pyferret"
 readme = "README.md"
-version = "0.2.0"
+version = "0.2.1"
 
 packages = [
   {include = "pyferret", from = "src"},
